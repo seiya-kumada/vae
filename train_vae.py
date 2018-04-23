@@ -6,7 +6,7 @@ import os
 import chainer
 from chainer import training
 from chainer.training import extensions
-import net
+import net_2
 
 
 def main():
@@ -36,7 +36,7 @@ def main():
     print('')
 
     # Prepare VAE model, defined in net.py
-    model = net.VAE(784, args.dimz, 500)
+    model = net_2.VAE(784, args.dimz, 500)
 
     # Setup an optimizer
     optimizer = chainer.optimizers.Adam()
@@ -60,7 +60,7 @@ def main():
     # used in the training with 'loss_func' option
     updater = training.StandardUpdater(
         train_iter, optimizer,
-        device=args.gpu, loss_func=model.get_loss_func())
+        device=args.gpu, loss_func=model.get_loss_func(C=0.1, k=5))
 
     trainer = training.Trainer(updater, (args.epoch, 'epoch'), out=args.out)
     trainer.extend(extensions.Evaluator(test_iter, model, device=args.gpu,

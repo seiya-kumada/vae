@@ -6,7 +6,8 @@ import os
 import chainer
 from chainer import training
 from chainer.training import extensions
-import net_2
+import net
+# import chainer.functions as F
 
 
 def main():
@@ -36,7 +37,8 @@ def main():
     print('')
 
     # Prepare VAE model, defined in net.py
-    model = net_2.VAE(784, args.dimz, 500)
+    # model = net_2.VAE(784, n_latent=args.dimz, n_h=500, activation=F.softplus)
+    model = net.VAE(784, n_latent=args.dimz, n_h=500)
 
     # Setup an optimizer
     optimizer = chainer.optimizers.Adam()
@@ -48,6 +50,7 @@ def main():
 
     # Load the MNIST dataset
     train, test = chainer.datasets.get_mnist(withlabel=False)
+
     if args.test:
         train, _ = chainer.datasets.split_dataset(train, 100)
         test, _ = chainer.datasets.split_dataset(test, 100)
@@ -60,7 +63,7 @@ def main():
     # used in the training with 'loss_func' option
     updater = training.StandardUpdater(
         train_iter, optimizer,
-        device=args.gpu, loss_func=model.get_loss_func(C=0.1, k=5))
+        device=args.gpu, loss_func=model.get_loss_func())
 
     trainer = training.Trainer(updater, (args.epoch, 'epoch'), out=args.out)
     trainer.extend(extensions.Evaluator(test_iter, model, device=args.gpu,

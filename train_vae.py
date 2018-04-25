@@ -6,8 +6,8 @@ import os
 import chainer
 from chainer import training
 from chainer.training import extensions
-import net
-# import chainer.functions as F
+import net_2
+import chainer.functions as F
 
 
 def main():
@@ -37,8 +37,8 @@ def main():
     print('')
 
     # Prepare VAE model, defined in net.py
-    # model = net_2.VAE(784, n_latent=args.dimz, n_h=500, activation=F.softplus)
-    model = net.VAE(784, n_latent=args.dimz, n_h=500)
+    model = net_2.VAE(784, n_latent=args.dimz, n_h=500, activation=F.softplus)
+    # model = net.VAE(784, n_latent=args.dimz, n_h=500)
 
     # Setup an optimizer
     optimizer = chainer.optimizers.Adam()

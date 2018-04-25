@@ -1,3 +1,3 @@
 #!/bin/bash
 
-MPLBACKEND=Agg python train_vae.py --gpu=0 --epoch=100
+MPLBACKEND=Agg python train_vae.py --gpu=0 --epoch=1000

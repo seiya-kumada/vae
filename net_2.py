@@ -7,6 +7,14 @@ import chainer.links as L
 import xavier
 
 
+def calculate_means(mu, ln_var):
+    xp = chainer.cuda.get_array_module(mu)
+    mean_mu = xp.mean(mu.data)
+    sigma = xp.exp(ln_var.data / 2)
+    mean_sigma = xp.mean(sigma)
+    return mean_mu, mean_sigma
+
+
 class VAE(chainer.Chain):
     """Variational AutoEncoder"""
 
@@ -66,6 +74,7 @@ class VAE(chainer.Chain):
         """
         def lf(x):
             mu, ln_var = self.encode(x)
+            mean_mu, mean_sigma = calculate_means(mu, ln_var)
             batchsize = len(mu.data)
             # reconstruction loss
             rec_loss = 0
@@ -76,6 +85,14 @@ class VAE(chainer.Chain):
             kl = gaussian_kl_divergence(mu, ln_var) / batchsize
             self.loss = self.rec_loss + C * kl
             chainer.report(
-                {'rec_loss': rec_loss, 'loss': self.loss, 'kl': kl}, observer=self)
+                {
+                    'rec_loss': rec_loss,
+                    'loss': self.loss,
+                    'kl': kl,
+                    'mu': mean_mu,
+                    'sigma': mean_sigma,
+                },
+                observer=self
+            )
             return self.loss
         return lf

@@ -72,8 +72,20 @@ def main():
     trainer.extend(extensions.snapshot(), trigger=(args.epoch, 'epoch'))
     trainer.extend(extensions.LogReport())
     trainer.extend(extensions.PrintReport(
-        ['epoch', 'main/loss', 'validation/main/loss',
-         'main/rec_loss', 'validation/main/rec_loss', 'main/kl', 'validation/main/kl', 'elapsed_time']))
+        [
+            'epoch',
+            'main/loss',
+            'validation/main/loss',
+            'main/rec_loss',
+            'validation/main/rec_loss',
+            'main/kl',
+            'validation/main/kl',
+            'main/mu',
+            'validation/main/mu',
+            'main/sigma',
+            'validation/main/sigma',
+            'elapsed_time',
+        ]))
     trainer.extend(extensions.ProgressBar())
 
     if args.resume:

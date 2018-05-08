@@ -102,3 +102,4 @@ ENV/
 
 result/*
 result_*/*
+reduced_dataset.npy

@@ -14,6 +14,10 @@ MODEL_PATH = './result/model_100.npz'
 DIMZ = 100
 NU = 0.01
 GAMMA = 0.005
+REDUCED_DATASET_PATH = './reduced_dataset.npy'
+THRESHOLD = 1.3
+N_INLIERS = 1000
+N_OUTLIERS = 100
 
 
 # encode images into (mu,sigma)
@@ -70,21 +74,38 @@ def detect_outliers_with_oneclass_svm(inners, outliers, nu=0.1, gamma=0.1):
     # display(error_outlier_scores, 10)
 
 
-def detect_outliers_with_tsne(inners, outliers):
-    dataset = np.concatenate([inners, outliers], axis=0)
-    reduced_dataset = TSNE(n_components=2, random_state=0).fit_transform(dataset)
-    reduced_inners = reduced_dataset[:inners.shape[0]]
-    reduced_outliers = reduced_dataset[inners.shape[0]:]
+def detect_outliers_with_tsne(inliers, outliers, reuses=True):
+    dataset = np.concatenate([inliers, outliers], axis=0)
+    reduced_dataset = None
+
+    if reuses is False:
+        reduced_dataset = TSNE(n_components=2, random_state=0).fit_transform(dataset)
+        np.save(REDUCED_DATASET_PATH, reduced_dataset)
+    else:
+        reduced_dataset = np.load(REDUCED_DATASET_PATH)
+
+    reduced_inliers = reduced_dataset[:inliers.shape[0]]
+    reduced_outliers = reduced_dataset[inliers.shape[0]:]
 
     # calculate a covariance matrix using reduced_inners
-    inv_sigma = np.linalg.inv(np.cov(reduced_inners, rowvar=False))
+    inv_sigma = np.linalg.inv(np.cov(reduced_inliers, rowvar=False))
     print('inv_sigma', inv_sigma.shape)
 
     # calculate a mean using reduced_inners
-    mean = np.mean(reduced_inners, axis=0)
+    mean = np.mean(reduced_inliers, axis=0)
 
-    outlier_dists = [mahalanobis(mean, outlier, inv_sigma) for outlier in reduced_outliers]
-    print(outlier_dists.shape)
+    for i in range(15):
+        threshold = THRESHOLD + 0.1 * i
+        r = sum(1 for outlier in reduced_outliers if mahalanobis(mean, outlier, inv_sigma) > threshold)
+        b = sum(1 for inlier in reduced_inliers if mahalanobis(mean, inlier, inv_sigma) > threshold)
+
+        # the number of predicted outliers
+        n = r + b
+
+        precision = r / n
+        recall = r / N_OUTLIERS
+        f = 2 * precision * recall / (precision + recall)
+        print('thr={},f={},p={},r={}'.format(threshold, f, precision, recall))
 
 
 if __name__ == '__main__':
@@ -98,10 +119,9 @@ if __name__ == '__main__':
     src_train, src_test = chainer.datasets.get_mnist(withlabel=True)
 
     # extract zero images
-    zero_mus, zero_ln_vars = extract_and_encode_images_with(label=0, number=1000, dataset=src_train)
+    zero_mus, zero_ln_vars = extract_and_encode_images_with(label=0, number=N_INLIERS, dataset=src_train)
 
     # extract six images
-    six_mus, six_ln_vars = extract_and_encode_images_with(label=6, number=100, dataset=src_train)
+    six_mus, six_ln_vars = extract_and_encode_images_with(label=6, number=N_OUTLIERS, dataset=src_train)
 
-    # detect_outliers(inners=zero_mus.data, outliers=six_mus.data, nu=NU, gamma=GAMMA)
-    detect_outliers_with_tsne(inners=zero_mus.data, outliers=six_mus.data)
+    detect_outliers_with_tsne(inliers=zero_mus.data, outliers=six_mus.data)

@@ -103,3 +103,4 @@ ENV/
 result/*
 result_*/*
 reduced_dataset.npy
+f_value.txt

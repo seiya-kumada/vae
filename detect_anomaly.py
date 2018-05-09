@@ -18,6 +18,7 @@ REDUCED_DATASET_PATH = './reduced_dataset.npy'
 THRESHOLD = 1.3
 N_INLIERS = 1000
 N_OUTLIERS = 100
+F_VALUE_PATH = './f_value.txt'
 
 
 # encode images into (mu,sigma)
@@ -94,18 +95,20 @@ def detect_outliers_with_tsne(inliers, outliers, reuses=True):
     # calculate a mean using reduced_inners
     mean = np.mean(reduced_inliers, axis=0)
 
-    for i in range(15):
-        threshold = THRESHOLD + 0.1 * i
-        r = sum(1 for outlier in reduced_outliers if mahalanobis(mean, outlier, inv_sigma) > threshold)
-        b = sum(1 for inlier in reduced_inliers if mahalanobis(mean, inlier, inv_sigma) > threshold)
+    with open(F_VALUE_PATH, 'w') as fout:
+        for i in range(15):
+            threshold = THRESHOLD + 0.1 * i
+            r = sum(1 for outlier in reduced_outliers if mahalanobis(mean, outlier, inv_sigma) > threshold)
+            b = sum(1 for inlier in reduced_inliers if mahalanobis(mean, inlier, inv_sigma) > threshold)
 
-        # the number of predicted outliers
-        n = r + b
+            # the number of predicted outliers
+            n = r + b
 
-        precision = r / n
-        recall = r / N_OUTLIERS
-        f = 2 * precision * recall / (precision + recall)
-        print('thr={},f={},p={},r={}'.format(threshold, f, precision, recall))
+            precision = r / n
+            recall = r / N_OUTLIERS
+            f = 2 * precision * recall / (precision + recall)
+            # print('thr={},f={},p={},r={}'.format(threshold, f, precision, recall))
+            fout.write('{} {} {} {}\n'.format(threshold, f, precision, recall))
 
 
 if __name__ == '__main__':

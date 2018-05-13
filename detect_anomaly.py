@@ -127,4 +127,4 @@ if __name__ == '__main__':
     # extract six images
     six_mus, six_ln_vars = extract_and_encode_images_with(label=6, number=N_OUTLIERS, dataset=src_train)
 
-    detect_outliers_with_tsne(inliers=zero_mus.data, outliers=six_mus.data)
+    detect_outliers_with_tsne(inliers=zero_mus.data, outliers=six_mus.data, reuses=False)

@@ -10,6 +10,10 @@ from chainer.training import extensions
 import net_2
 import chainer.functions as F
 
+# see make_binarized_mnist.py
+TRAIN_PATH = '/root/data/binarized_mnist/train.npy'
+TEST_PATH = '/root/data/binarized_mnist/test.npy'
+
 
 def extract_specified_labels(dataset, n):
     return np.array([img for (img, label) in dataset if label == n])
@@ -56,7 +60,10 @@ def main():
         chainer.serializers.load_npz(args.initmodel, model)
 
     # Load the MNIST dataset
-    train, test = chainer.datasets.get_mnist(withlabel=True)
+    # train, test = chainer.datasets.get_mnist(withlabel=True)
+    # use binarized mnist!
+    train = np.load(TRAIN_PATH)
+    test = np.load(TEST_PATH)
 
     # Extract images which have the specified labels
     train = extract_specified_labels(train, args.label)

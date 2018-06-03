@@ -20,6 +20,9 @@ N_INLIERS = 1000
 N_OUTLIERS = 100
 F_VALUE_PATH = './f_value.txt'
 
+TRAIN_PATH = '/root/data/binarized_mnist/train.npy'
+TEST_PATH = '/root/data/binarized_mnist/test.npy'
+
 
 # encode images into (mu,sigma)
 def encode(xs):
@@ -96,7 +99,7 @@ def detect_outliers_with_tsne(inliers, outliers, reuses=True):
     mean = np.mean(reduced_inliers, axis=0)
 
     with open(F_VALUE_PATH, 'w') as fout:
-        for i in range(15):
+        for i in range(20):
             threshold = THRESHOLD + 0.1 * i
             r = sum(1 for outlier in reduced_outliers if mahalanobis(mean, outlier, inv_sigma) > threshold)
             b = sum(1 for inlier in reduced_inliers if mahalanobis(mean, inlier, inv_sigma) > threshold)
@@ -119,7 +122,10 @@ if __name__ == '__main__':
     model.to_cpu()
 
     # load dataset
-    src_train, src_test = chainer.datasets.get_mnist(withlabel=True)
+    # use binarized mnist
+    # src_train, src_test = chainer.datasets.get_mnist(withlabel=True)
+    src_train = np.load(TRAIN_PATH)
+    src_test = np.load(TEST_PATH)
 
     # extract zero images
     zero_mus, zero_ln_vars = extract_and_encode_images_with(label=0, number=N_INLIERS, dataset=src_train)

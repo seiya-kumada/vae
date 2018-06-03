@@ -20,5 +20,5 @@ net.py,net_2.py,net_3.pyを訓練する際に使う。
 # train_vae_with_specified_label.py
 特定の数字だけで訓練するもの。異常検知への応用を検討した。
 
-
-
+# make_binarized_mnist.py
+ダウンロードしたmnistは２値画像でない。0.5以上を1、それ以外を0になる画像を作成する。

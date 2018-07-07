@@ -22,3 +22,7 @@ net.py,net_2.py,net_3.pyを訓練する際に使う。
 
 # make_binarized_mnist.py
 ダウンロードしたmnistは２値画像でない。0.5以上を1、それ以外を0になる画像を作成する。
+
+# detect_anomaly.py
+F値、Precision、Recallを計算する。
+

@@ -26,3 +26,5 @@ net.py,net_2.py,net_3.pyを訓練する際に使う。
 # detect_anomaly.py
 F値、Precision、Recallを計算する。
 
+# net_4.py
+net_2.pyのデコーダをガウス関数に変更する。

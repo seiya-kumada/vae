@@ -34,9 +34,9 @@ class VAE(chainer.Chain):
             self.ld3_mu = L.Linear(n_h, n_in, initialW=xavier.Xavier(n_h, n_in))
             self.ld3_ln_var = L.Linear(n_h, n_in, initialW=xavier.Xavier(n_h, n_in))
 
-    def __call__(self, x, sigmoid=True):
+    def __call__(self, x):
         """AutoEncoder"""
-        return self.decode(self.encode(x)[0], sigmoid)
+        return self.decode(self.encode(x)[0])
 
     def encode(self, x):
         h1 = self.activation(self.le1(x))

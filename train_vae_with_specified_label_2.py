@@ -7,7 +7,7 @@ import numpy as np
 import chainer
 from chainer import training
 from chainer.training import extensions
-import net_2
+import net_4
 import chainer.functions as F
 
 # see make_binarized_mnist.py
@@ -50,7 +50,7 @@ def main():
     print('')
 
     # Prepare VAE model, defined in net.py
-    model = net_2.VAE(784, n_latent=args.dimz, n_h=500, activation=F.softplus)
+    model = net_4.VAE(784, n_latent=args.dimz, n_h=500, activation=F.softplus)
     # model = net.VAE(784, n_latent=args.dimz, n_h=500)
 
     # Setup an optimizer
@@ -62,10 +62,7 @@ def main():
         chainer.serializers.load_npz(args.initmodel, model)
 
     # Load the MNIST dataset
-    # train, test = chainer.datasets.get_mnist(withlabel=True)
-    # use binarized mnist!
-    train = np.load(TRAIN_PATH)
-    test = np.load(TEST_PATH)
+    train, test = chainer.datasets.get_mnist(withlabel=True)
 
     # Extract images which have the specified labels
     train = extract_specified_labels(train, args.label)

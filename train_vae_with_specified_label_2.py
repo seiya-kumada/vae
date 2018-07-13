@@ -51,10 +51,10 @@ def main():
 
     # Prepare VAE model, defined in net.py
     model = net_4.VAE(784, n_latent=args.dimz, n_h=500, activation=F.softplus)
-    # model = net.VAE(784, n_latent=args.dimz, n_h=500)
 
     # Setup an optimizer
-    optimizer = chainer.optimizers.Adam()
+    # optimizer = chainer.optimizers.Adam(beta1=0.1)
+    optimizer = chainer.optimizers.MomentumSGD(lr=0.001)
     optimizer.setup(model)
 
     # Initialize

@@ -53,7 +53,7 @@ def main():
     model = net_4.VAE(784, n_latent=args.dimz, n_h=500, activation=F.softplus)
 
     # Setup an optimizer
-    # optimizer = chainer.optimizers.Adam(beta1=0.1)
+    # optimizer = chainer.optimizers.Adam(beta1=0.5)
     optimizer = chainer.optimizers.MomentumSGD(lr=0.001)
     optimizer.setup(model)
 
